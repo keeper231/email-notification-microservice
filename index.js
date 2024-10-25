@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
+const fs = require('fs');
 
 // Initialize the app
 const app = express();
@@ -48,17 +49,17 @@ app.post('/add-emergency-patient', (req, res) => {
 
 // Route to send email with PDF attachment
 app.post('/send-assessment-email', async (req, res) => {
-    const { email, pdfFilePath } = req.body;
+    const { email, pdfFileName, pdfBase64 } = req.body;
 
     const mailOptions = {
-        from: 'keeper.rem@gmail.com', // Sender address
-        to: email, // Recipient email
+        from: 'keeper.rem@gmail.com',
+        to: email,
         subject: 'Emergency Patient Assessment PDF',
         text: 'Please find attached the Emergency Patient Assessment PDF.',
         attachments: [
             {
-                filename: 'Diagnostic_Test_Order.pdf',
-                path: pdfFilePath, // Path to the PDF file
+                filename: pdfFileName,
+                content: Buffer.from(pdfBase64, 'base64'), // Convert from base64 to buffer
             },
         ],
     };
