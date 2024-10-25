@@ -58,8 +58,9 @@ app.post('/send-assessment-email', async (req, res) => {
         text: 'Please find attached the Emergency Patient Assessment PDF.',
         attachments: [
             {
-                filename: pdfFileName,
+                filename: pdfFileName || 'Diagnostic_Test_Order.pdf', // Use the provided file name or a default
                 content: Buffer.from(pdfBase64, 'base64'), // Convert from base64 to buffer
+                contentType: 'application/pdf' // Specify the content type as PDF
             },
         ],
     };
