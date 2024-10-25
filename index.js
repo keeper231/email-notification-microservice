@@ -46,6 +46,33 @@ app.post('/add-emergency-patient', (req, res) => {
     res.status(200).json({ message: 'Patient added and email sent.' });
 });
 
+// Route to send email with PDF attachment
+app.post('/send-assessment-email', async (req, res) => {
+    const { email, pdfFilePath } = req.body;
+
+    const mailOptions = {
+        from: 'keeper.rem@gmail.com', // Sender address
+        to: email, // Recipient email
+        subject: 'Emergency Patient Assessment PDF',
+        text: 'Please find attached the Emergency Patient Assessment PDF.',
+        attachments: [
+            {
+                filename: 'Diagnostic_Test_Order.pdf',
+                path: pdfFilePath, // Path to the PDF file
+            },
+        ],
+    };
+
+    try {
+        let info = await transporter.sendMail(mailOptions);
+        console.log('Email sent: ' + info.response);
+        res.status(200).json({ message: 'Email sent successfully.' });
+    } catch (error) {
+        console.error('Error sending email: ', error);
+        res.status(500).json({ error: 'Failed to send email.' });
+    }
+});
+
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
