@@ -2,11 +2,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
 const fs = require('fs');
+const cors = require('cors');
 
 // Initialize the app
 const app = express();
 app.use(bodyParser.json());
-const cors = require('cors');
 app.use(cors());
 
 // Email Transporter Configuration (using a Gmail account for example)
@@ -22,7 +22,7 @@ const transporter = nodemailer.createTransport({
 const sendEmailNotification = async (patientData) => {
     const mailOptions = {
         from: 'keeper.rem@gmail.com', // Sender address
-        to: 'leamarielawayan@gmail.com', // Recipient email
+        to: 'jrrllrey17@gmail.com', // Recipient email
         subject: 'Emergency Patient Added', // Subject of the email
         text: `An emergency patient has been added:\n\nPatient Info:\nName: ${patientData.emergency_first_name} ${patientData.emergency_last_name}\nDate of Birth: ${patientData.emergency_age}\nPriority Level: ${patientData.priority_level}`, // Email body
     };
@@ -75,6 +75,11 @@ app.post('/send-assessment-email', async (req, res) => {
         console.error('Error sending email: ', error);
         res.status(500).json({ error: 'Failed to send email.' });
     }
+});
+
+app.get('/test-route', (req, res) => {
+    console.log('The /test-route endpoint is working!');
+    res.status(200).json({ message: 'This route is working perfectly!' });
 });
 
 // Start the server
