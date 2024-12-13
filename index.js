@@ -2,12 +2,12 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
 const fs = require('fs');
-const cors = require('cors');
+// const cors = require('cors');
 
 // Initialize the app
 const app = express();
 app.use(bodyParser.json());
-app.use(cors());
+// app.use(cors());
 
 // Email Transporter Configuration (using a Gmail account for example)
 const transporter = nodemailer.createTransport({
