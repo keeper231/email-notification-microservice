@@ -9,7 +9,7 @@ const app = express();
 app.use(bodyParser.json());
 // app.use(cors());
 
-// Email Transporter Configuration (using a Gmail account for example)
+// Email Transporter Configuration (using a Gmail account for)
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -18,7 +18,7 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-// Email sending function
+// Email sending emeregency patient notification
 const sendEmailNotification = async (patientData) => {
     const mailOptions = {
         from: 'keeper.rem@gmail.com', // Sender address
@@ -74,6 +74,27 @@ app.post('/send-assessment-email', async (req, res) => {
     } catch (error) {
         console.error('Error sending email: ', error);
         res.status(500).json({ error: 'Failed to send email.' });
+    }
+});
+
+// Route to send OTP email
+app.post('/send-otp', async (req, res) => {
+    const { email, otp } = req.body;
+
+    const mailOptions = {
+        from: 'keeper.rem@gmail.com',
+        to: email,
+        subject: 'Your OTP for Password Reset',
+        text: `Your OTP for resetting your password is: ${otp}. This expires in 30 minutes.`,
+    };
+
+    try {
+        let info = await transporter.sendMail(mailOptions);
+        console.log('OTP email sent: ' + info.response);
+        res.status(200).json({ message: 'OTP email sent successfully.' });
+    } catch (error) {
+        console.error('Error sending OTP email: ', error);
+        res.status(500).json({ error: 'Failed to send OTP email.' });
     }
 });
 
