@@ -103,6 +103,69 @@ app.get('/test-route', (req, res) => {
     res.status(200).json({ message: 'This route is working perfectly!' });
 });
 
+// Dataset of FMS Notifications messages with placeholders
+const fmsNotificationDataset = [
+    { subject: "Approved Invoice", message: "Finance Manager have approved the invoice no: ..." },
+    { subject: "Rejected Invoice", message: "Finance Manager have rejected the invoice no: ..." },
+    { subject: "Approved Insurance Claim", message: "The ... Insurance Claim have been approved by the Finance Manager" },
+    { subject: "Rejected Insurance Claim", message: "The ... Insurance Claim have been rejected by the Finance Manager" },
+    { subject: "Added New Employee", message: "A new employee has been added: ..." },
+    { subject: "Added New Employees", message: "Bulk upload of employees has been added" },
+    { subject: "Added New Department and Services", message: "New Department: ... and its Services has been added" },
+    { subject: "Added New Service", message: "New Service has been added ..." },
+    { subject: "Succesful Account Retrieval", message: "An FMS Account has been Unlocked: ..." },
+    { subject: "Unsuccesful Account Retrieval", message: "An FMS Account was tried to unlocked its account: ..." },
+    { subject: "New User Created", message: "A New User Account has been created: ..." },
+    { subject: "New User Account Creation Unsuccessful", message: "Failed at creating a new user account: ..." },
+    { subject: "Added New Ward", message: "A new ward has been added: ..." },
+    { subject: "Added New Room", message: "A new room has been added under the ... ward" },
+    { subject: "Added New Bed", message: "A new bed has been added under the ... room" },
+    { subject: "Updated Employment Status", message: "The employment status of ... has been updated" },
+    { subject: "Employee Soft Delete", message: "The employee ... has been soft deleted" },
+    { subject: "Bed Occupied", message: "The bed ... has been occupied by a patient" },
+    { subject: "Updated Department and Services Data", message: "The department: ... and its services data has been updated" },
+    { subject: "Final Invoice Submitted", message: "The final invoice: .. has been submitted" },
+    { subject: "Invoice has been Voided", message: "The invoice: ... has been voided" },
+    { subject: "Successful Payment Process", message: "The payment for the invoice: ... has been paid ..." }
+];
+
+// Function that replaces placeholders in the message with the actual data
+function replacePlaceholders(message, data) {
+    return message.replace(/\.\.\./g, data);
+}
+
+// API Route for making the notifications 
+app.post('/api/notification', (req, res) => {
+    try {
+        const notifications = [];
+        const { Subject: subject, Data: data_2 } = req.body;
+
+        let message = null;
+
+        for (const notif of fmsNotificationDataset) {
+            if (notif.subject === subject) { //checks if the subject has an equivalent subject in the dataset
+                message = replacePlaceholders(notif.message, data_2);
+                break;
+            }
+        }
+
+        if (!message) {
+            return res.status(404).json({ error: `Subject "${subject}" not found in the dataset` });
+        }
+
+        const notification = {
+            Message: message
+        };
+        notifications.push(notification);
+
+        return res.status(201).json({ success: 'Notification created', notification });
+    } catch (error) {
+        console.error(`Error: ${error.message}`);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
